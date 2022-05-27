@@ -2,7 +2,9 @@ import json
 import pprint
 import requests
 import re
-import sqlite.database_access as db
+import sqlite.orm as orm
+# import sqlite.database_access as db
+from sqlite.orm import Hh_Requests, Hh_Responses
 
 
 DOMAIN = 'https://api.hh.ru/'
@@ -124,11 +126,14 @@ def set_keywords(keywords):
     return keywords_l
 
 def get_data(connect_string, keywords):
-    # connect_string = '../sqlite/hh_db.sqlite'
     rez_data = []
     keywords_l = set_keywords(keywords)
     print(type(keywords),f'keywords={keywords}')
-    last_request_id = db.write_requests(connect_string,keywords)
+    # changes to ORM
+    # last_request_id = db.write_requests(connect_string,keywords)
+    orm.create_db(connect_string)
+    kwrd = Hh_Requests('')
+    last_request_id = kwrd.set_requests(connect_string, keywords)
     print(f'last_request_id={last_request_id}')
     i = 1
     iteration = 1
@@ -147,16 +152,18 @@ def get_data(connect_string, keywords):
 
     data_save_json(rez_data, 'hhru_rezult.json')
     requirements_l = rez_data[0]['requirements']
-    db.write_responses(connect_string, last_request_id, requirements_l)
-    # requirements = db.read_skills(connect_string, last_request_id)
-    # print(type(requirements),f'requirements={requirements}')
+    # changes to ORM
+    # db.write_responses(connect_string, last_request_id, requirements_l)
+    responses = Hh_Responses(0, '', 0, 0)
+    responses.set_responses(connect_string, last_request_id, requirements_l)
     return rez_data
 
 
-# if __name__ == '__main__':
-    # set_keywords('NAME:(Python)')
-    # result = get_data('NAME:(Python)')
-    # print(type(result))
+if __name__ == '__main__':
+    connect_string = 'sqlite:///../sqlite/hh_db_orm.sqlite'
+    set_keywords('NAME:(Python)')
+    result = get_data(connect_string,'NAME:(Python)')
+    print(type(result))
     # print(type(result[0]['requirements']))
     # pprint.pprint(result)
     # keywords = result[0]['keywords']

@@ -10,7 +10,7 @@ Used modules:
 * hhru.all_data
 * sqlite.database_access
     
-Each request to hh.ru persists to the database (see sqlite/hh_db.sqlite).
+Each request to hh.ru persists to the database (see sqlite/hh_db_orm.sqlite) via ORM SQLAlchemy.
 Then the last request is read from the database and displayed on the page.
 The last request is additionally written to the file hhru_rezult.json.
 
